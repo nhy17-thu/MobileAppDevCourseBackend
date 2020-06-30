@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 指定了mapper对应的dao -->
+<mapper namespace="com.mobilecourse.backend.dao.OrderImageDao">
+
+    <!-- 这个id要和dao中的函数名称一一对应，resultType代表了查询的结果，要和数据库类型一一对应 -->
+    <select id="getImageByImageId" resultType="com.mobilecourse.backend.model.OrderImage">
+        SELECT *
+        FROM OrderImage
+        WHERE iid = #{iid}
+    </select>
+
+    <select id="getImagesByOrderId" resultType="com.mobilecourse.backend.model.OrderImage">
+        SELECT *
+        FROM OrderImage
+        WHERE oid = #{oid}
+        ORDER BY uploadTime ASC
+    </select>
+
+    <!-- parameterType指定了参数类型 -->
+    <!-- 输入的参数要用#{}包裹,且与dao里面传入的参数一样 -->
+    <insert id="addOrderImage" keyProperty="iid" useGeneratedKeys="true"
+            parameterType="com.mobilecourse.backend.model.OrderImage">
+        INSERT INTO OrderImage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            oid, imagePath, uploadTime
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{oid}, #{imagePath}, #{uploadTime}
+        </trim>;
+    </insert>
+
+</mapper>

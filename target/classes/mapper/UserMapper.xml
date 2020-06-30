@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 指定了mapper对应的dao -->
+<mapper namespace="com.mobilecourse.backend.dao.UserDao">
+
+    <!-- 这个id要和dao中的函数名称一一对应，resultType代表了查询的结果，要和数据库类型一一对应 -->
+    <select id="selectAll" resultType="com.mobilecourse.backend.model.User">
+        SELECT *
+        FROM User
+    </select>
+
+    <!-- 有返回值的一定要指定返回值类型！ -->
+    <select id="userCnt" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM User
+    </select>
+
+    <!-- parameterType指定了参数类型 -->
+    <!-- 输入的参数要用#{}包裹,且与dao里面传入的参数一样 -->
+    <insert id="register" keyProperty="uid" useGeneratedKeys="true" parameterType="com.mobilecourse.backend.model.User">
+        INSERT INTO User
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            name, email, password, createTime, avatar, status
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{name}, #{email}, #{password}, #{createTime}, #{avatar}, #{status}
+        </trim>;
+    </insert>
+
+<!--    注销当前账户：还需要删除所有相关订单记录！-->
+<!--    <delete id="deleteUser">-->
+<!--        DELETE FROM User-->
+<!--        WHERE name=#{name}-->
+<!--    </delete>-->
+
+    <!-- 有返回值的一定要指定返回值类型！ -->
+    <select id="getUserByName" resultType="com.mobilecourse.backend.model.User">
+        SELECT *
+        FROM User
+        WHERE name=#{name}
+    </select>
+
+    <!-- 有返回值的一定要指定返回值类型！ -->
+    <select id="getUserByID" resultType="com.mobilecourse.backend.model.User">
+        SELECT *
+        FROM User
+        WHERE uid=#{uid}
+    </select>
+
+    <select id="getUserByEmail" resultType="com.mobilecourse.backend.model.User">
+        SELECT *
+        FROM User
+        WHERE email=#{email}
+    </select>
+
+    <!-- 查找指定随机验证码对应的用户 -->
+    <select id="getUserByCode" resultType="com.mobilecourse.backend.model.User">
+        SELECT *
+        FROM User
+        WHERE status=#{code}
+    </select>
+
+    <!-- 更新用户信息：不能更新uid! -->
+    <update id="updateUserSelectiveByID" parameterType="com.mobilecourse.backend.model.User">
+        update User
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where uid = #{uid};
+    </update>
+
+</mapper>

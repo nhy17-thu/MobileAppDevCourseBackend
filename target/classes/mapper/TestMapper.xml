@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 指定了mapper对应的dao -->
+<mapper namespace="com.mobilecourse.backend.dao.TestDao">
+
+    <!-- 这个id要和dao中的函数名称一一对应，resultType代表了查询的结果，要和数据库类型一一对应 -->
+    <select id="selectAll" resultType="com.mobilecourse.backend.model.Test">
+        SELECT *
+        FROM Test
+    </select>
+
+    <!-- 有返回值的一定要指定返回值类型！ -->
+    <select id="testCnt" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM Test
+    </select>
+
+    <!-- parameterType指定了参数类型 -->
+    <insert id="insert"  keyProperty="id" useGeneratedKeys="true" parameterType="com.mobilecourse.backend.model.Test">
+        INSERT INTO Test
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            content, createTime
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            #{content}, #{createTime}
+        </trim>;
+    </insert>
+
+    <!-- 输入的参数要用#{}包裹,且与dao里面传入的参数一样 -->
+    <delete id="delete">
+        DELETE FROM Test
+        WHERE id=#{id}
+    </delete>
+
+    <!-- 更新操作 -->
+    <update id="update">
+        UPDATE Test
+        SET content=#{content}
+        WHERE id=#{id}
+    </update>
+
+</mapper>

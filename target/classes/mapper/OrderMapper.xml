@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 指定了mapper对应的dao -->
+<mapper namespace="com.mobilecourse.backend.dao.OrderDao">
+
+    <!-- 这个id要和dao中的函数名称一一对应，resultType代表了查询的结果，要和数据库类型一一对应 -->
+    <select id="getOrderByOid" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE oid = #{oid}
+    </select>
+
+    <!-- 根据发布方uid查找所有订单，时间降序（最新的在最前） -->
+    <select id="getOrdersByIssuerId" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE issuerId = #{uid}
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getOrdersByReceiverId" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE receiverId = #{uid}
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getCompletedOrdersByIssuerId" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE issuerId = #{uid} and status = 'confirmed'
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getCompletedOrdersByReceiverId" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE receiverId = #{uid} and status = 'confirmed'
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getOrdersByTitleKeyword" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE title LIKE #{keyword}
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getOrdersByContentKeyword" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE content LIKE #{keyword}
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getOrdersByPriceRange" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE price BETWEEN #{lowerBound} AND #{upperBound}
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getOrdersByStartPosKeyword" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE startPos LIKE #{keyword}
+        ORDER BY updateTime DESC
+    </select>
+
+    <select id="getOrdersByEndPosKeyword" resultType="com.mobilecourse.backend.model.Order">
+        SELECT *
+        FROM `Order`
+        WHERE endPos LIKE #{keyword}
+        ORDER BY updateTime DESC
+    </select>
+
+    <!-- parameterType指定了参数类型 -->
+    <!-- 输入的参数要用#{}包裹,且与dao里面传入的参数一样 -->
+    <insert id="addOrder" keyProperty="oid" useGeneratedKeys="true" parameterType="com.mobilecourse.backend.model.Order">
+        INSERT INTO `Order`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            issuerId, title, content, price, startPos, endPos
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{issuerId}, #{title}, #{content}, #{price}, #{startPos}, #{endPos}
+        </trim>;
+    </insert>
+
+    <!-- 更新订单信息：不能更新oid和issuerId! -->
+    <update id="updateOrderSelectiveByOID" parameterType="com.mobilecourse.backend.model.Order">
+        update `Order`
+        <set>
+            <if test="receiverId != null">
+                receiverId = #{receiverId},
+            </if>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            updateTime = current_timestamp(),
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="receiverLongitude != null">
+                receiverLongitude = #{receiverLongitude},
+            </if>
+            <if test="startPos != null">
+                startPos = #{startPos},
+            </if>
+            <if test="endPos != null">
+                endPos = #{endPos},
+            </if>
+            <if test="receiverLatitude != null">
+                receiverLatitude = #{receiverLatitude},
+            </if>
+        </set>
+        where oid = #{oid};
+    </update>
+
+</mapper>
